@@ -5,7 +5,8 @@ import './App.css';
 function App() {
 
   const [conectado, setConectado] = useState(false);
-  const [ mensaje, setMensaje] = useState('');
+  const [client, setClient] = useState();
+  const [ledState, setLedState] = useState();
     
   useEffect(()=>{
     const client = mqtt.connect('ws://www.controlmanza.net:8083/mqtt',{
@@ -20,30 +21,70 @@ function App() {
         payload: 'Connection Closed abnormally..!',
         qos: 0,
         retain: false
-      }});
-    console.log(client)
+      }}
+    );
+
+    setClient(client);
+
     client.on('connect', ()=>{
       console.log('ya nos conectamos');
-      console.log(client)
       setConectado(true)
       client.subscribe('home1', function (err) {
         if (!err) {
-          client.publish('presence', 'Hello mqtt')
           
         }
       })
-    })
-    client.publish('home', 'ya la hicimos');
-    client.on('message',(topic, payload)=>{
-      setMensaje(payload.toString());
+      
     })
 
-  },[ ])
+    client.publish('home', 'ya la hicimos');
+
+    client.subscribe('LED', function (err) {
+      if (!err) {
+        client.publish('presence', 'Hello mqtt')
+        
+      }
+    })
+
+    client.on('message',(topic, payload)=>{
+      // console.log(topic, payload.toString())
+      if(topic === 'LED' && payload.toString() === 'LED ENCENDIDO'){
+        setLedState(true);
+      }
+      if(topic === 'LED' && payload.toString() === 'LED APAGADO'){
+        setLedState(false);
+      }
+    })
+
+
+
+  },[ ledState ])
+  
+
+
+  const handleEncenderLED = ()=>{
+    client.publish('inTopic', '1');
+  }
+
+  const handleApagarLED = ()=>{
+    client.publish('inTopic', '0');
+  }
 
   return (
     <div className="App">
        <h1>{conectado ? 'Conectado al servidor Emqx': 'Desconectados del servidor'}</h1>
-       <h2>{mensaje}</h2>
+       <div className="status">
+        <div className={ledState ? 'greenLED': 'redLED' }>
+
+        </div>
+       </div>
+       
+       <button onClick={handleEncenderLED} >
+         Encender
+       </button>
+       <button onClick={handleApagarLED}>
+         Apagar
+       </button>
     </div>
   );
 }

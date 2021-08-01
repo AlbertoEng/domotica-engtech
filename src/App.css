@@ -36,3 +36,26 @@
     transform: rotate(360deg);
   }
 }
+
+.status{
+  display: flex;
+  justify-content: center;
+  margin: 20px;
+  padding: 30px;
+}
+
+.greenLED{
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  border: 2px solid black;
+  background-color: green;
+}
+
+.redLED{
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  border: 2px solid black;
+  background-color: red;
+}
