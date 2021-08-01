@@ -26,7 +26,7 @@ function App() {
       console.log('ya nos conectamos');
       console.log(client)
       setConectado(true)
-      client.subscribe('home', function (err) {
+      client.subscribe('home1', function (err) {
         if (!err) {
           client.publish('presence', 'Hello mqtt')
           
