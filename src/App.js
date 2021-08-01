@@ -1,23 +1,49 @@
-import logo from './logo.svg';
+import React,{useState, useEffect} from 'react';
+import mqtt from 'mqtt';
 import './App.css';
 
 function App() {
+
+  const [conectado, setConectado] = useState(false);
+  const [ mensaje, setMensaje] = useState('');
+    
+  useEffect(()=>{
+    const client = mqtt.connect('ws://www.controlmanza.net:8083/mqtt',{
+      keepalive: 30,
+      protocolId: 'MQTT',
+      protocolVersion: 4,
+      clean: true,
+      reconnectPeriod: 1000,
+      connectTimeout: 30 * 1000,
+      will: {
+        topic: 'WillMsg',
+        payload: 'Connection Closed abnormally..!',
+        qos: 0,
+        retain: false
+      }});
+    console.log(client)
+    client.on('connect', ()=>{
+      console.log('ya nos conectamos');
+      console.log(client)
+      setConectado(true)
+      client.subscribe('home', function (err) {
+        if (!err) {
+          client.publish('presence', 'Hello mqtt')
+          
+        }
+      })
+    })
+    client.publish('home', 'ya la hicimos');
+    client.on('message',(topic, payload)=>{
+      setMensaje(payload.toString());
+    })
+
+  },[ ])
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+       <h1>{conectado ? 'Conectado al servidor Emqx': 'Desconectados del servidor'}</h1>
+       <h2>{mensaje}</h2>
     </div>
   );
 }
