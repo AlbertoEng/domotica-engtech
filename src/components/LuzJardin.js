@@ -78,7 +78,7 @@ const LuzJardin = () => {
             <div className='containerCommand'>
                 
                 {/* <h3 className='titleCommand'>{conectado ? 'Conectado al servidor EMQX': 'Desconectados del servidor EMQX'}</h3> */}
-                <h3>Luz Jardin</h3>
+                <h3 className='titleCommand'>Luz Jardin</h3>
                 <div className="status">
                 <div className={ledState ? 'greenLED': 'redLED' }>
 
